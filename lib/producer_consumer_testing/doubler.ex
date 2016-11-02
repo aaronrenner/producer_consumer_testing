@@ -18,4 +18,10 @@ defmodule ProducerConsumerTesting.Doubler do
     events = Enum.map(events, & &1 * 2)
     {:noreply, events, state}
   end
+
+  # Need to handle this message when the producer shuts down
+  def handle_info({_, {:producer, status}}, state) do
+    GenStage.async_notify(self(), {:producer, status})
+    {:noreply, [], state}
+  end
 end
